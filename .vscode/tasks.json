@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Rodar SableCC",
+      "type": "shell",
+      "command": "java",
+      "args": [
+        "-jar",
+        "third-party/sablecc-3.7/lib/sablecc.jar",
+        "${file}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

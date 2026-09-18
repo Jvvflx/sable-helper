@@ -1,0 +1,44 @@
+{
+  "name": "sable-helper",
+  "displayName": "Sable Helper",
+  "description": "Extension for syntax highlighting of the sableCC",
+  "version": "0.0.1",
+  "publisher": "Jvvflx",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jvvflx/sable-helper.git"
+  },
+  "engines": { "vscode": "^1.126.0" },
+  "categories": ["Programming Languages"],
+  "main": "./extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "languages": [{
+      "id": "sablecc",
+      "aliases": ["sable", "sablecc"],
+      "extensions": [".sable"]  ,
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "sablecc",
+      "scopeName": "source.sable",
+      "path": "./syntaxes/sablecc.tmLanguage.json"
+    }],
+    "commands": [
+      {
+        "command": "sableHelper.runSableCC",
+        "title": "Rodar SableCC",
+        "icon": "resources/run.png"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "sableHelper.runSableCC",
+          "group": "navigation",
+          "when": "resourceLangId == sablecc"
+        }
+      ]
+  }
+}
+}

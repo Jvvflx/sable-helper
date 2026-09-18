@@ -1,0 +1,541 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "sable",
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#section_package"
+		},
+		{
+			"include": "#section_helpers"
+		},
+		{
+			"include": "#section_states"
+		},
+		{
+			"include": "#section_ignored_tokens"
+		},
+		{
+			"include": "#section_tokens"
+		},
+		{
+			"include": "#section_productions"
+		},
+		{
+			"include": "#section_ast"
+		}
+	],
+	"repository": {
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.block.sablecc",
+					"begin": "/\\*",
+					"end": "\\*/"
+				},
+				{
+					"name": "comment.line.double-slash.sablecc",
+					"match": "//.*$"
+				}
+			]
+		},
+		"strings": {
+			"patterns": [
+				{
+					"comment": "literais entre aspas duplas",
+			"name": "string.quoted.double.sablecc",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.sablecc",
+					"match": "\\\\."
+				}
+			]
+				},
+				{
+					"comment": "literais entre aspas simples; '' escapa uma aspa simples",
+					"name": "string.quoted.single.sablecc",
+					"begin": "'",
+					"end": "'",
+					"patterns": [
+						{
+							"name": "constant.character.escape.sablecc",
+							"match": "''"
+						},
+						{
+							"name": "constant.character.escape.sablecc",
+							"match": "\\\\."
+						}
+					]
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"comment": "valores hexadecimais, ex: 0x0041",
+					"name": "constant.numeric.hex.sablecc",
+					"match": "\\b0[xX][0-9a-fA-F]+\\b"
+				},
+				{
+					"comment": "codigo de caractere ou numero decimal, ex: aspa_simples = 39;",
+					"name": "constant.numeric.decimal.sablecc",
+					"match": "\\b[0-9]+\\b"
+				}
+			]
+		},
+		"operators": {
+			"patterns": [
+				{
+					"comment": "operador de faixa, ex: [0..0xffff]",
+					"name": "keyword.operator.range.sablecc",
+					"match": "\\.\\."
+				},
+				{
+					"comment": "seta fixa de tipo de retorno / acao / transicao de estado",
+					"name": "keyword.operator.arrow.sablecc",
+					"match": "->"
+				},
+				{
+					"comment": "atribuicao de definicao",
+					"name": "keyword.operator.assignment.sablecc",
+					"match": "="
+				},
+				{
+					"comment": "alternancia",
+					"name": "keyword.operator.alternation.sablecc",
+					"match": "\\|"
+				},
+				{
+					"comment": "acesso a campo/tipo, ex: a_grammar.a_package",
+					"name": "keyword.operator.accessor.sablecc",
+					"match": "\\."
+				},
+				{
+					"comment": "diferenca de conjunto dentro de colchetes",
+					"name": "keyword.operator.difference.sablecc",
+					"match": "-"
+				},
+				{
+					"comment": "quantificadores estilo regex",
+					"name": "keyword.operator.quantifier.sablecc",
+					"match": "[+*?]"
+				}
+			]
+		},
+		"punctuation": {
+			"patterns": [
+				{
+					"name": "punctuation.terminator.statement.sablecc",
+					"match": ";"
+				},
+				{
+					"name": "punctuation.separator.comma.sablecc",
+					"match": ","
+				},
+				{
+					"name": "punctuation.separator.colon.sablecc",
+					"match": ":"
+				},
+				{
+					"name": "punctuation.definition.parameters.begin.sablecc",
+					"match": "\\("
+				},
+				{
+					"name": "punctuation.definition.parameters.end.sablecc",
+					"match": "\\)"
+				},
+				{
+					"name": "punctuation.definition.charclass.begin.sablecc",
+					"match": "\\["
+				},
+				{
+					"name": "punctuation.definition.charclass.end.sablecc",
+					"match": "\\]"
+				}
+			]
+		},
+		"specifiers": {
+			"patterns": [
+				{
+					"comment": "prefixo fixo T. / P. para desambiguar token vs producao",
+					"match": "\\b(T|P)(\\.)",
+					"captures": {
+						"1": {
+							"name": "storage.type.specifier.sablecc"
+						},
+						"2": {
+							"name": "keyword.operator.accessor.sablecc"
+						}
+					}
+				}
+			]
+		},
+		"labels": {
+			"patterns": [
+				{
+					"comment": "rotulo de elemento, ex: [gramatica]:grammar",
+					"match": "(\\[)([A-Za-z_][A-Za-z0-9_]*)(\\])(\\s*)(:)",
+					"captures": {
+						"1": {
+							"name": "punctuation.definition.label.begin.sablecc"
+						},
+						"2": {
+							"name": "variable.parameter.label.sablecc"
+						},
+						"3": {
+							"name": "punctuation.definition.label.end.sablecc"
+						},
+						"5": {
+							"name": "punctuation.separator.label.sablecc"
+						}
+					}
+				}
+			]
+		},
+		"state_braces": {
+			"comment": "bloco {estado}, {estado->estado}, {estado, estado->estado} usado antes de definicoes de token",
+			"name": "meta.brace.state.sablecc",
+			"begin": "\\{",
+			"end": "\\}",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.state-list.begin.sablecc"
+				}
+			},
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.state-list.end.sablecc"
+				}
+			},
+			"patterns": [
+				{
+					"name": "keyword.operator.arrow.sablecc",
+					"match": "->"
+				},
+				{
+					"name": "punctuation.separator.comma.sablecc",
+					"match": ","
+				},
+				{
+					"comment": "nome de estado referenciado no cabecalho do token",
+					"name": "variable.other.state.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+				}
+			]
+		},
+		"action_braces": {
+			"comment": "bloco {nome}, {-> Tipo} ou {-> New Tipo.variante(args)} usado em Productions e Abstract Syntax Tree",
+			"name": "meta.brace.action.sablecc",
+			"begin": "\\{",
+			"end": "\\}",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.action.begin.sablecc"
+				}
+			},
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.action.end.sablecc"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#action_braces"
+				},
+				{
+					"name": "keyword.operator.arrow.sablecc",
+					"match": "->"
+				},
+				{
+					"name": "keyword.control.new.sablecc",
+					"match": "\\bNew\\b"
+				},
+				{
+					"include": "#specifiers"
+				},
+				{
+					"include": "#labels"
+				},
+				{
+					"name": "keyword.operator.accessor.sablecc",
+					"match": "\\."
+				},
+				{
+					"name": "punctuation.separator.comma.sablecc",
+					"match": ","
+				},
+				{
+					"name": "punctuation.definition.parameters.begin.sablecc",
+					"match": "\\("
+				},
+				{
+					"name": "punctuation.definition.parameters.end.sablecc",
+					"match": "\\)"
+				},
+				{
+					"name": "punctuation.definition.charclass.begin.sablecc",
+					"match": "\\["
+				},
+				{
+					"name": "punctuation.definition.charclass.end.sablecc",
+					"match": "\\]"
+				},
+				{
+					"name": "keyword.operator.quantifier.sablecc",
+					"match": "[+*?]"
+				},
+				{
+					"name": "constant.numeric.decimal.sablecc",
+					"match": "\\b[0-9]+\\b"
+				},
+				{
+					"comment": "identificador referenciado dentro da acao/rotulo: tipo ou campo da AST",
+					"name": "variable.other.ast-reference.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+				}
+			]
+		},
+		"section_package": {
+			"comment": "declaracao Package nome.nome.nome;",
+			"begin": "^\\s*(Package)\\b",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.section.sablecc"
+				}
+			},
+			"end": "(?=^\\s*(Package|Helpers|States|Ignored\\s+Tokens|Tokens|Productions|Abstract\\s+Syntax\\s+Tree)\\b)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#operators"
+				},
+				{
+					"include": "#punctuation"
+				},
+				{
+					"comment": "identificador que compoe o nome do pacote",
+					"name": "entity.name.namespace.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+				}
+			]
+				},
+		"section_helpers": {
+			"comment": "secao Helpers: definicoes de expressoes regulares nomeadas",
+			"begin": "^\\s*(Helpers)\\b",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.section.sablecc"
+				}
+			},
+			"end": "(?=^\\s*(Package|Helpers|States|Ignored\\s+Tokens|Tokens|Productions|Abstract\\s+Syntax\\s+Tree)\\b)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#strings"
+				},
+				{
+					"comment": "nome de helper sendo definido, ex: digito_hexa =",
+					"name": "entity.name.variable.helper.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b(?=\\s*=)"
+				},
+				{
+					"include": "#numbers"
+				},
+				{
+					"include": "#operators"
+				},
+				{
+					"include": "#punctuation"
+				},
+				{
+					"comment": "referencia a um helper ja definido",
+					"name": "variable.other.helper.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+				}
+			]
+		},
+		"section_states": {
+			"comment": "secao States: lista de nomes de estado do lexer",
+			"begin": "^\\s*(States)\\b",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.section.sablecc"
+				}
+			},
+			"end": "(?=^\\s*(Package|Helpers|States|Ignored\\s+Tokens|Tokens|Productions|Abstract\\s+Syntax\\s+Tree)\\b)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#punctuation"
+				},
+				{
+					"name": "variable.other.state.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+				}
+			]
+		},
+		"section_ignored_tokens": {
+			"comment": "secao Ignored Tokens: lista de tokens ignorados pelo parser",
+			"begin": "^\\s*(Ignored\\s+Tokens)\\b",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.section.sablecc"
+				}
+			},
+			"end": "(?=^\\s*(Package|Helpers|States|Ignored\\s+Tokens|Tokens|Productions|Abstract\\s+Syntax\\s+Tree)\\b)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#punctuation"
+				},
+				{
+					"comment": "referencia a um token definido em Tokens",
+					"name": "variable.other.token.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+				}
+			]
+		},
+		"section_tokens": {
+			"comment": "secao Tokens: definicoes de tokens do lexer, com estado opcional entre chaves",
+			"begin": "^\\s*(Tokens)\\b",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.section.sablecc"
+				}
+			},
+			"end": "(?=^\\s*(Package|Helpers|States|Ignored\\s+Tokens|Tokens|Productions|Abstract\\s+Syntax\\s+Tree)\\b)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#strings"
+				},
+				{
+					"include": "#state_braces"
+				},
+				{
+					"comment": "nome de token sendo definido, ex: numero_hexa =",
+					"name": "entity.name.variable.token.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b(?=\\s*=)"
+				},
+				{
+					"include": "#numbers"
+				},
+				{
+					"include": "#operators"
+				},
+				{
+					"include": "#punctuation"
+				},
+				{
+					"comment": "referencia a um token ou helper usado na expressao do token",
+					"name": "variable.other.token.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+				}
+			]
+		},
+		"section_productions": {
+			"comment": "secao Productions: gramatica sintatica concreta com acoes semanticas",
+			"begin": "^\\s*(Productions)\\b",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.section.sablecc"
+				}
+			},
+			"end": "(?=^\\s*(Package|Helpers|States|Ignored\\s+Tokens|Tokens|Productions|Abstract\\s+Syntax\\s+Tree)\\b)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#strings"
+				},
+				{
+					"include": "#action_braces"
+				},
+				{
+					"include": "#specifiers"
+				},
+				{
+					"include": "#labels"
+				},
+				{
+					"comment": "nome da producao sendo definida, com tipo de retorno opcional {-> Tipo} antes do =",
+					"name": "entity.name.function.production.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b(?=\\s*(\\{[^}]*\\})?\\s*=)"
+				},
+				{
+					"include": "#numbers"
+				},
+				{
+					"include": "#operators"
+				},
+				{
+					"include": "#punctuation"
+				},
+				{
+					"comment": "referencia a uma producao ou token usada no corpo da regra",
+					"name": "variable.other.production.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+				}
+			]
+		},
+		"section_ast": {
+			"comment": "secao Abstract Syntax Tree: definicao dos tipos de no da arvore sintatica abstrata",
+			"begin": "^\\s*(Abstract\\s+Syntax\\s+Tree)\\b",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.section.sablecc"
+				}
+			},
+			"end": "(?=^\\s*(Package|Helpers|States|Ignored\\s+Tokens|Tokens|Productions|Abstract\\s+Syntax\\s+Tree)\\b)",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#action_braces"
+				},
+				{
+					"include": "#labels"
+				},
+				{
+					"comment": "nome do tipo de no da AST sendo definido",
+					"name": "entity.name.type.ast.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b(?=\\s*=)"
+				},
+				{
+					"include": "#numbers"
+				},
+				{
+					"include": "#operators"
+				},
+				{
+					"include": "#punctuation"
+				},
+				{
+					"comment": "referencia a um tipo de campo dentro de outro no da AST",
+					"name": "support.type.ast.sablecc",
+					"match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+				}
+			]
+		}
+	},
+	"scopeName": "source.sable"
+}
