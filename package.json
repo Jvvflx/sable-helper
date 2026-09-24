@@ -2,7 +2,7 @@
   "name": "sable-helper",
   "displayName": "Sable Helper",
   "description": "Extension for syntax highlighting of the sableCC",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "Jvvflx",
   "repository": {
     "type": "git",
